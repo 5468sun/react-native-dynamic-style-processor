@@ -1,6 +1,8 @@
-import { transform } from "css-viewport-units-transform";
+/* eslint-disable */
+import { transform as transformViewportUnit } from "css-viewport-units-transform";
+import { transform as transformPx2dpUnit } from "css-px2dp-units-transform";
 import memoize from "micro-memoize";
-import { Dimensions } from "react-native";
+import { Dimensions, PixelRatio } from "react-native";
 import { process as mediaQueriesProcess } from "react-native-css-media-query-processor";
 
 function omit(obj, omitKey) {
@@ -20,7 +22,15 @@ function viewportUnitsTransform(obj, matchObject) {
   if (!hasViewportUnits) {
     return obj;
   }
-  return transform(omitMemoized(obj, "__viewportUnits"), matchObject);
+  return transformViewportUnit(omitMemoized(obj, "__viewportUnits"), matchObject);
+}
+
+function px2dpUnitsTransform(obj, matchObject){
+  const hasPx2dpUnits = "__px2dpUnits" in obj;
+  if (!hasPx2dpUnits) {
+    return obj;
+  }
+  return transformPx2dpUnit(omitMemoized(obj, "__px2dpUnits"), matchObject);
 }
 
 function mediaQueriesTransform(obj, matchObject) {
@@ -34,10 +44,10 @@ function mediaQueriesTransform(obj, matchObject) {
 
 export function process(obj) {
   const matchObject = getMatchObject();
-  return viewportUnitsTransform(
+  return px2dpUnitsTransform(viewportUnitsTransform(
     mediaQueriesTransform(obj, matchObject),
     matchObject
-  );
+  ),matchObject) ;
 }
 
 function getMatchObject() {
@@ -47,6 +57,10 @@ function getMatchObject() {
     height: win.height,
     orientation: win.width > win.height ? "landscape" : "portrait",
     "aspect-ratio": win.width / win.height,
+    "pixelRatio": PixelRatio.get(),
+    "fontScale": PixelRatio.getFontScale(),
+    "designWidth" : 750,
+    "designHeight": 1334,
     type: "screen"
   };
 }
