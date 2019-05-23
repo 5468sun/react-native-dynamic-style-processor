@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "css-viewport-units-transform": "^0.10.2",
+    "css-px2dp-units-transform": "git+https://github.com/5468sun/css-px2dp-units-transform.git",
     "micro-memoize": "^2.0.3",
     "react-native-css-media-query-processor": "^0.21.1"
   },
